@@ -460,14 +460,6 @@ button.option:hover { border-color: color-mix(in srgb, var(--primary) 60%, var(-
 .ex-timer.warn { background: #fff4d6; border-color: #e6a100; color: #9a6200; }
 .ex-timer.low { background: #e5322d; border-color: #e5322d; color: #fff; animation: pulse 1s ease-in-out infinite; }
 
-.ex-titlebar {
-  position: relative; display: block; width: 100%; margin-top: 10px; padding: 16px 48px; border: 0; border-radius: 12px;
-  background: linear-gradient(135deg, var(--ex-green-2), var(--ex-green)); color: #fff; cursor: pointer; text-align: center;
-  font: 700 1.3rem var(--font-bn); box-shadow: 0 4px 14px rgba(63, 155, 53, 0.3);
-}
-.ex-title { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.ex-chevron { position: absolute; right: 16px; top: 50%; transform: translateY(-50%); transition: transform 0.2s; }
-.ex-chevron.open { transform: translateY(-50%) rotate(180deg); }
 
 .ex-progress { display: flex; align-items: center; gap: 12px; margin-top: 10px; }
 .ex-progress-track { flex: 1; height: 10px; border-radius: 999px; background: var(--ex-line); overflow: hidden; }
@@ -475,15 +467,6 @@ button.option:hover { border-color: color-mix(in srgb, var(--primary) 60%, var(-
 .ex-progress-label { font-size: 0.95rem; color: var(--ex-muted); white-space: nowrap; }
 .ex-progress-label b { color: var(--ex-green-ink); }
 
-.ex-panel { margin-top: 8px; background: var(--ex-paper); border: 1px solid var(--ex-line); border-radius: 12px; padding: 14px; max-height: 45vh; overflow: auto; box-shadow: var(--ex-shadow); }
-.ex-panel-stats { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
-.ex-stat { display: inline-flex; gap: 6px; align-items: baseline; padding: 6px 12px; border-radius: 999px; background: var(--ex-bg); font-size: 0.95rem; }
-.ex-stat.green { background: var(--ex-green-soft); color: var(--ex-green-ink); }
-.ex-stat.red { background: #fdecea; color: #c62828; }
-.ex-jump { display: grid; grid-template-columns: repeat(auto-fill, minmax(42px, 1fr)); gap: 6px; }
-.ex-jump button { height: 40px; border: 1.5px solid var(--ex-line); border-radius: 10px; background: var(--ex-paper); color: var(--ex-text); font: 600 0.95rem var(--font-bn); cursor: pointer; }
-.ex-jump button:hover { border-color: var(--ex-green); }
-.ex-jump button.done { background: var(--ex-green); border-color: var(--ex-green); color: #fff; }
 
 .ex-toast { position: fixed; top: 200px; left: 50%; transform: translateX(-50%); z-index: 40; background: #222; color: #fff; padding: 0.75rem 1.25rem; border-radius: 10px; font-weight: 600; box-shadow: 0 8px 30px rgba(0,0,0,.25); animation: slidein 0.25s ease-out; max-width: calc(100% - 32px); text-align: center; }
 
@@ -502,7 +485,7 @@ button.option:hover { border-color: color-mix(in srgb, var(--primary) 60%, var(-
 .ex-q {
   position: relative; background: var(--ex-paper); border-radius: 14px; padding: 18px 20px 14px;
   border: 1px solid var(--ex-line); border-left: 5px solid #d8d3c6; box-shadow: var(--ex-shadow);
-  scroll-margin-top: 230px; transition: border-color 0.2s;
+  scroll-margin-top: 170px; transition: border-color 0.2s;
 }
 .ex-q.answered { border-left-color: var(--ex-green); }
 .ex-qhead { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 12px; }
@@ -539,12 +522,11 @@ button.option:hover { border-color: color-mix(in srgb, var(--primary) 60%, var(-
   .ex-submit { height: 50px; font-size: 1.1rem; }
   .ex-timer { font-size: 1.45rem; gap: 6px; }
   .ex-timer svg { width: 18px; height: 18px; }
-  .ex-titlebar { font-size: 1.08rem; padding: 13px 42px; }
   .ex-rules { font-size: 1.02rem; }
   .ex-q { padding: 14px 12px 10px; }
   .ex-qnum { min-width: 30px; height: 30px; font-size: 0.95rem; }
   .ex-qtext { font-size: 1.15rem; }
   .ex-opts { padding-left: 0; }
   .ex-opt { font-size: 1.08rem; gap: 12px; padding: 10px 12px; }
-  .ex-q { scroll-margin-top: 210px; }
+  .ex-q { scroll-margin-top: 150px; }
 }

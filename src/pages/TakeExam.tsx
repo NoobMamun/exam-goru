@@ -21,7 +21,6 @@ export default function TakeExam() {
   const [attempt, setAttempt] = useState<Attempt | null | undefined>(undefined);
   const [now, setNow] = useState(Date.now());
   const [confirming, setConfirming] = useState(false);
-  const [panelOpen, setPanelOpen] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
   const attemptRef = useRef<Attempt | null>(null);
   const warned = useRef<Set<number>>(new Set());
@@ -100,11 +99,6 @@ export default function TakeExam() {
   const choose = (qid: string, originalIdx: number) =>
     update((a) => (a.answers[qid] !== undefined ? a : { ...a, answers: { ...a.answers, [qid]: originalIdx } }));
 
-  const jumpTo = (i: number) => {
-    setPanelOpen(false);
-    document.getElementById(`q-${i}`)?.scrollIntoView({ behavior: "smooth", block: "start" });
-  };
-
   if (attempt === undefined) return <div className="ex-page"><div className="ex-loading">লোড হচ্ছে…</div></div>;
   if (attempt === null) return <div className="page empty">Attempt not found. <Link to="/">Back to dashboard</Link></div>;
 
@@ -134,12 +128,6 @@ export default function TakeExam() {
               <span>{clock(remainingSec)}</span>
             </div>
           </div>
-          <button className="ex-titlebar bn" onClick={() => setPanelOpen((o) => !o)} aria-expanded={panelOpen}>
-            <span className="ex-title">{config.title}</span>
-            <svg className={`ex-chevron ${panelOpen ? "open" : ""}`} viewBox="0 0 24 24" width="20" height="20" aria-hidden>
-              <path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
-          </button>
           <div className="ex-progress bn" aria-label={`${answered} of ${total} answered`}>
             <div className="ex-progress-track">
               <div className="ex-progress-fill" style={{ width: `${progressPct}%` }} />
@@ -148,35 +136,6 @@ export default function TakeExam() {
               উত্তর দেওয়া: <b>{bn(answered)}</b> / {bn(total)}
             </span>
           </div>
-          {panelOpen && (
-            <div className="ex-panel bn">
-              <div className="ex-panel-stats">
-                <span className="ex-stat">
-                  মোট প্রশ্ন <b>{bn(total)}</b>
-                </span>
-                <span className="ex-stat green">
-                  উত্তর দেওয়া <b>{bn(answered)}</b>
-                </span>
-                <span className="ex-stat red">
-                  বাকি <b>{bn(total - answered)}</b>
-                </span>
-                <span className="ex-stat">
-                  সময় <b>{bn(config.durationMin)} মিনিট</b>
-                </span>
-              </div>
-              <div className="ex-jump">
-                {attempt.items.map((it, i) => (
-                  <button
-                    key={it.questionId}
-                    className={attempt.answers[it.questionId] !== undefined ? "done" : ""}
-                    onClick={() => jumpTo(i)}
-                  >
-                    {bn(i + 1)}
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
         </header>
 
         {toast && <div className="ex-toast bn">{toast}</div>}
