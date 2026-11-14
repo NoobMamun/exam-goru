@@ -98,12 +98,6 @@ export default function TakeExam() {
   const choose = (qid: string, originalIdx: number) =>
     update((a) => ({ ...a, answers: { ...a.answers, [qid]: originalIdx } }));
 
-  const clear = (qid: string) =>
-    update((a) => {
-      const { [qid]: _removed, ...rest } = a.answers;
-      return { ...a, answers: rest };
-    });
-
   const jumpTo = (i: number) => {
     setPanelOpen(false);
     document.getElementById(`q-${i}`)?.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -194,11 +188,6 @@ export default function TakeExam() {
                     </label>
                   ))}
                 </div>
-                {chosen !== undefined && (
-                  <button className="ex-clear bn" onClick={() => clear(q.id)}>
-                    উত্তর মুছুন
-                  </button>
-                )}
               </li>
             );
           })}

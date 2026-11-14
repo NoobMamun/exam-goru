@@ -464,8 +464,6 @@ button.option:hover { border-color: color-mix(in srgb, var(--primary) 60%, var(-
 .ex-opt.on .ex-radio::after { content: ""; width: 14px; height: 14px; border-radius: 50%; background: var(--ex-green-dark); }
 .ex-opt input:focus-visible + .ex-radio { outline: 3px solid rgba(31, 107, 42, 0.35); outline-offset: 2px; }
 .ex-opt.on .ex-opt-text { font-weight: 600; }
-.ex-clear { margin: 2px 0 0 54px; padding: 2px 6px; border: 0; background: none; color: var(--ex-muted); font-size: 0.95rem; text-decoration: underline; cursor: pointer; }
-.ex-clear:hover { color: #d42020; }
 .ex-bottom { padding: 28px 20px 0; display: grid; }
 .ex-submit-btn { background: var(--ex-orange); color: #fff; }
 .ex-submit-btn:hover { background: var(--ex-orange-dark); }
@@ -480,7 +478,6 @@ button.option:hover { border-color: color-mix(in srgb, var(--primary) 60%, var(-
   .ex-qtext { font-size: 1.2rem; }
   .ex-opts { padding-left: 4px; }
   .ex-opt { font-size: 1.1rem; gap: 14px; }
-  .ex-clear { margin-left: 44px; }
   .ex-q { scroll-margin-top: 150px; }
 }
 
