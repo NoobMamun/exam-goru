@@ -42,6 +42,7 @@ export default function TakeExam() {
     const cur = attemptRef.current;
     if (!cur || cur.status !== "in_progress") return;
     const next = fn(cur);
+    if (next === cur) return;
     attemptRef.current = next;
     setAttempt(next);
     saveAttempt(next);
@@ -95,8 +96,9 @@ export default function TakeExam() {
     return () => window.removeEventListener("beforeunload", handler);
   }, []);
 
+  /** First choice is final: once a question is answered, further clicks do nothing. */
   const choose = (qid: string, originalIdx: number) =>
-    update((a) => ({ ...a, answers: { ...a.answers, [qid]: originalIdx } }));
+    update((a) => (a.answers[qid] !== undefined ? a : { ...a, answers: { ...a.answers, [qid]: originalIdx } }));
 
   const jumpTo = (i: number) => {
     setPanelOpen(false);
@@ -111,6 +113,7 @@ export default function TakeExam() {
   const answered = Object.keys(attempt.answers).length;
   const low = remainingSec <= 60;
   const warn = remainingSec <= 300;
+  const progressPct = total ? (answered / total) * 100 : 0;
 
   return (
     <div className="ex-page">
@@ -118,10 +121,17 @@ export default function TakeExam() {
         <header className="ex-sticky">
           <div className="ex-topbar">
             <button className="ex-submit" onClick={() => setConfirming(true)}>
+              <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden>
+                <path d="M5 12l5 5L20 7" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
               Submit
             </button>
             <div className={`ex-timer ${low ? "low" : warn ? "warn" : ""}`} role="timer" aria-label="Time remaining">
-              {clock(remainingSec)}
+              <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden>
+                <circle cx="12" cy="13" r="8" fill="none" stroke="currentColor" strokeWidth="2" />
+                <path d="M12 9v4l2.5 2M9 2h6" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+              </svg>
+              <span>{clock(remainingSec)}</span>
             </div>
           </div>
           <button className="ex-titlebar bn" onClick={() => setPanelOpen((o) => !o)} aria-expanded={panelOpen}>
@@ -130,20 +140,28 @@ export default function TakeExam() {
               <path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
           </button>
+          <div className="ex-progress bn" aria-label={`${answered} of ${total} answered`}>
+            <div className="ex-progress-track">
+              <div className="ex-progress-fill" style={{ width: `${progressPct}%` }} />
+            </div>
+            <span className="ex-progress-label">
+              উত্তর দেওয়া: <b>{bn(answered)}</b> / {bn(total)}
+            </span>
+          </div>
           {panelOpen && (
             <div className="ex-panel bn">
               <div className="ex-panel-stats">
-                <span>
-                  মোট প্রশ্ন: <b>{bn(total)}</b>
+                <span className="ex-stat">
+                  মোট প্রশ্ন <b>{bn(total)}</b>
                 </span>
-                <span>
-                  উত্তর দেওয়া: <b className="ex-c-green">{bn(answered)}</b>
+                <span className="ex-stat green">
+                  উত্তর দেওয়া <b>{bn(answered)}</b>
                 </span>
-                <span>
-                  বাকি: <b className="ex-c-red">{bn(total - answered)}</b>
+                <span className="ex-stat red">
+                  বাকি <b>{bn(total - answered)}</b>
                 </span>
-                <span>
-                  সময়: <b>{bn(config.durationMin)} মিনিট</b>
+                <span className="ex-stat">
+                  সময় <b>{bn(config.durationMin)} মিনিট</b>
                 </span>
               </div>
               <div className="ex-jump">
@@ -164,29 +182,55 @@ export default function TakeExam() {
         {toast && <div className="ex-toast bn">{toast}</div>}
 
         <div className="ex-rules bn">
-          প্রতি প্রশ্নের মান {bnMarks(config.marksPerCorrect)}
-          {config.negativeEnabled && config.negativePerWrong > 0
-            ? ` ও ভুল উত্তরের জন্য ${bnMarks(config.negativePerWrong)} কাটা যাবে।`
-            : "। ভুল উত্তরের জন্য কোনো নম্বর কাটা যাবে না।"}
+          <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden>
+            <circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" strokeWidth="2" />
+            <path d="M12 11v6M12 7.5v.5" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" />
+          </svg>
+          <div>
+            <div>
+              প্রতি প্রশ্নের মান {bnMarks(config.marksPerCorrect)}
+              {config.negativeEnabled && config.negativePerWrong > 0
+                ? ` ও ভুল উত্তরের জন্য ${bnMarks(config.negativePerWrong)} কাটা যাবে।`
+                : "। ভুল উত্তরের জন্য কোনো নম্বর কাটা যাবে না।"}
+            </div>
+            <div className="ex-rules-sub">একবার উত্তর দিলে আর পরিবর্তন করা যাবে না।</div>
+          </div>
         </div>
 
         <ol className="ex-list">
           {attempt.items.map((it, i) => {
             const q = attempt.questions.find((x) => x.id === it.questionId)!;
             const chosen = attempt.answers[q.id];
+            const locked = chosen !== undefined;
             return (
-              <li key={q.id} id={`q-${i}`} className="ex-q">
-                <div className="ex-qtext bn">
-                  {bn(i + 1)}) {q.text}
+              <li key={q.id} id={`q-${i}`} className={`ex-q ${locked ? "answered" : ""}`}>
+                <div className="ex-qhead">
+                  <span className="ex-qnum">{bn(i + 1)}</span>
+                  <div className="ex-qtext bn">{q.text}</div>
+                  {locked && (
+                    <span className="ex-qdone" title="উত্তর দেওয়া হয়েছে" aria-label="উত্তর দেওয়া হয়েছে">
+                      ✓
+                    </span>
+                  )}
                 </div>
                 <div className="ex-opts" role="radiogroup" aria-label={`প্রশ্ন ${bn(i + 1)}`}>
-                  {it.optionOrder.map((orig) => (
-                    <label key={orig} className={`ex-opt bn ${chosen === orig ? "on" : ""}`}>
-                      <input type="radio" name={`q-${q.id}`} checked={chosen === orig} onChange={() => choose(q.id, orig)} />
-                      <span className="ex-radio" aria-hidden />
-                      <span className="ex-opt-text">{q.options[orig].text}</span>
-                    </label>
-                  ))}
+                  {it.optionOrder.map((orig) => {
+                    const on = chosen === orig;
+                    const disabled = locked && !on;
+                    return (
+                      <label key={orig} className={`ex-opt bn ${on ? "on" : ""} ${disabled ? "locked" : ""}`}>
+                        <input
+                          type="radio"
+                          name={`q-${q.id}`}
+                          checked={on}
+                          disabled={disabled}
+                          onChange={() => choose(q.id, orig)}
+                        />
+                        <span className="ex-radio" aria-hidden />
+                        <span className="ex-opt-text">{q.options[orig].text}</span>
+                      </label>
+                    );
+                  })}
                 </div>
               </li>
             );
